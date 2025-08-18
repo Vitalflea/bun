@@ -1,6 +1,6 @@
 import { serve } from "bun";
 import { fetchJson } from "./networking.ts";
-import { extractJwt, decodeJwt } from "./jsonUtils.ts";
+import { extractJwt, decodeJwt } from "./JsonUtils.ts";
 
 const JWT_URL = "https://jagex.akamaized.net/direct6/osrs-win/osrs-win.json";
 

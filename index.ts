@@ -1,6 +1,6 @@
 import { serve } from "bun";
 import { fetchJson } from "./networking.ts";
-import { extractJwt, decodeJwt } from "./jsonUtils.ts";
+import { extractJwt, decodeJwt } from "./JsonUtils.ts";
 
 const HOST = 'https://jagex.akamaized.net/direct6/osrs-win/osrs-win.json';
 
@@ -11,9 +11,7 @@ serve({
      
       const data = await fetchJson(HOST);
 
-      const token = extractJwt(data); // assumes key "token" by default
-
-      const decoded = decodeJwt(token);
+        const decoded = decodeJwt(data);
 
       return new Response(JSON.stringify(decoded, null, 2), {
         headers: { "Content-Type": "application/json" },
