@@ -1,15 +1,17 @@
 {
   "name": "bun",
-  "module": "index.ts",
+  "version": "1.0.0",
   "type": "module",
   "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
+  "scripts": {
+    "start": "bun run server.ts"
   },
   "dependencies": {
     "jwt-decode": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/jwt-decode": "^3.1.1",
+    "typescript": "^5.2.0"
   }
 }
