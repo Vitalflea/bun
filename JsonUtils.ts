@@ -5,7 +5,7 @@ export function decodeJwt(token: string): any {
   return jwtDecode(token);
 }
 
-export function extractJwt(json: Record<string, any>, key: string = "token"): string {
+export function extractJwt(json: Record<string, any>, key: string = "response"): string {
   const token = json[key];
   if (!token) throw new Error(`No JWT found under key "${key}"`);
   return token;
