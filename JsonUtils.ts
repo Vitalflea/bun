@@ -1,4 +1,4 @@
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 export function decodeJwt(token: string): any {
   if (!token) throw new Error("No token provided");
