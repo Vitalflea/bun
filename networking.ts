@@ -24,5 +24,5 @@ export async function fetchJson(url: string, headers: Record<string, string> = {
   });
 
     const textResponse = await response.text();
-    console.log(textResponse);
+    return textResponse;
 }
