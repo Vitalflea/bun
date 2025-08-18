@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "bun run server.ts"
+    "start": "bun run index.ts"
   },
   "dependencies": {
     "jwt-decode": "^4.0.0"
