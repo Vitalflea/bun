@@ -9,7 +9,7 @@ serve({
   async fetch(req) {
     try {
      
-      const data = await fetchJson(JWT_URL);
+      const data = await fetchJson(HOST);
 
       const token = extractJwt(data); // assumes key "token" by default
 
