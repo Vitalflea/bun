@@ -104,7 +104,7 @@ serve({
       let baseUrlFull: string = catalogDecoded?.config?.remote?.baseUrl || "";
 
 // ensure it has http
-if (!baseUrlFull.startsWith("http://") && !baseUrlFull.startsWith("https://")) {
+if (!baseUrlFull.startsWith("https://")) {
   baseUrlFull = "https://" + baseUrlFull;
 }
 
