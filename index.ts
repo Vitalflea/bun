@@ -100,15 +100,15 @@ serve({
       const manifestData = await fetchJson(metafileUrl);
       const manifestDecoded = decodeJwt(manifestData);
 
-      // Step 4: process pieces
-      let baseUrlFull: string = catalogDecoded?.config?.remote?.baseUrl || "";
+      // Step 4: process let baseUrlFull: string = catalogDecoded?.config?.remote?.baseUrl || "";
 
-// ensure it has http
-if (!baseUrlFull.startsWith("https://")) {
-  baseUrlFull = "https://" + baseUrlFull;
+// force HTTPS
+if (baseUrlFull.startsWith("http://")) {
+  baseUrlFull = baseUrlFull.replace("http://", "https://");
 }
 
-console.log("Base URL:", baseUrlFull);const baseUrl = baseUrlFull.split("/direct6/osrs-win/")[0]; // strip suffix
+console.log("Base URL:", baseUrlFull);
+      const baseUrl = baseUrlFull.split("/direct6/osrs-win/")[0]; // strip suffix
       if (!baseUrl) throw new Error("Base URL not found in catalog config");
       const mergedPieces = await processPieces(manifestDecoded, baseUrl);
 
