@@ -56,7 +56,7 @@ async function processPieces(metafile: any, baseUrl: string) {
     const hexDigest = Buffer.from(digestBytes).toString("hex");
 
     // build piece path
-    const piecePath = `direct6/osrs-win/pieces/${hexDigest.substring(0, 2)}/${hexDigest}.solidpiece`;
+    const piecePath = `/direct6/osrs-win/pieces/${hexDigest.substring(0, 2)}/${hexDigest}.solidpiece`;
 
     // fetch piece
     const resp = await fetch(baseUrl + piecePath);
