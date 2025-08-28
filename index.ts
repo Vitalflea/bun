@@ -6,7 +6,8 @@ import pako from "pako";
 import { writeFile, mkdir } from "fs/promises";
 import { dirname, join } from "path";
 import { join } from "path";
-/**
+import os from "os";
+
  * Save files from the merged decompressed buffer using manifest metadata.
  * @param manifest The manifest JSON
  * @param mergedPieces The Uint8Array containing the reconstructed game data
@@ -125,13 +126,10 @@ serve({
       if (!baseUrl) throw new Error("Base URL not found in catalog config");
       const mergedPieces = await processPieces(manifestDecoded, baseUrl);
 
-// get current user home
-const homeDir = process.env.HOME || "/tmp"; // fallback if undefined
+		const homeDir = os.homedir();
+		const outputDir = join(homeDir, "binaries");
 
-// add "binaries" folder
-const outputDir = join(homeDir, "binaries");
-
-console.log(outputDir); // e.g., /home/ubuntu/binaries
+		console.log(outputDir); // e.g., /home/ubuntu/binaries
       await saveFiles(manifestDecoded, mergedPieces, outputDir);
       // Return sizes only (raw Uint8Array too large for JSON)
       return new Response(
