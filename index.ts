@@ -100,7 +100,8 @@ serve({
       const manifestData = await fetchJson(metafileUrl);
       const manifestDecoded = decodeJwt(manifestData);
 
-      // Step 4: process let baseUrlFull: string = catalogDecoded?.config?.remote?.baseUrl || "";
+      // Step 4: process 
+      const let baseUrlFull: string = catalogDecoded?.config?.remote?.baseUrl || "";
 
 // force HTTPS
 if (baseUrlFull.startsWith("http://")) {
