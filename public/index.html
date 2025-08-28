@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Login with JWT</title>
+</head>
+<body>
+<h2>Login</h2>
+<form id="loginForm">
+  Username: <input name="username" /><br />
+  Password: <input name="password" type="password" /><br />
+  <button type="submit">Login</button>
+</form>
+
+<h2>Register</h2>
+<form id="registerForm">
+  Username: <input name="username" /><br />
+  Password: <input name="password" type="password" /><br />
+  <button type="submit">Register</button>
+</form>
+
+<h2>Profile</h2>
+<button id="profileBtn">Load Profile</button>
+<pre id="profile"></pre>
+
+<script type="module">
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const profileBtn = document.getElementById('profileBtn');
+  const profileEl = document.getElementById('profile');
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(loginForm);
+    const res = await fetch('/login', { method: 'POST', body: formData });
+    if (!res.ok) {
+      alert(await res.text());
+      return;
+    }
+    const data = await res.json();
+    localStorage.setItem('token', data.token);
+    alert('Login successful!');
+  });
+
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(registerForm);
+    const res = await fetch('/register', { method: 'POST', body: formData });
+    alert(await res.text());
+  });
+
+  profileBtn.addEventListener('click', async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return alert('You are not logged in!');
+    const res = await fetch('/profile', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    profileEl.textContent = await res.text();
+  });
+</script>
+</body>
+</html>

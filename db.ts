@@ -1,0 +1,19 @@
+import Database from "bun:sqlite";
+
+const db = new Database("users.db");
+
+db.prepare(`
+CREATE TABLE IF NOT EXISTS users (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+username TEXT UNIQUE,
+password TEXT
+)
+`).run();
+
+export interface User {
+id: number;
+username: string;
+password: string;
+}
+
+export default db;
