@@ -54,14 +54,13 @@ const HOST = 'https://jagex.akamaized.net/direct6/osrs-win/osrs-win.json';
 function decodeDigest(digestB64: string): string {
   // Base64URL → Base64
   let base64 = digestB64.replace(/-/g, "+").replace(/_/g, "/");
-  // pad to multiple of 4
   base64 = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
-  // decode to binary string
-  const decodedStr = base64Decode(base64);
-  // convert binary string to Uint8Array
-  const bytes = Uint8Array.from(decodedStr, c => c.charCodeAt(0));
-  // convert to hex string
-  return Array.from(bytes).map(b => b.toString(16).padStart(2, "0")).join("");
+
+  // Decode directly to bytes
+  const bytes = Buffer.from(base64, "base64");
+
+  // Convert to hex
+  return bytes.toString("hex");
 }
 
 // process all pieces
