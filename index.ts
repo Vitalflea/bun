@@ -7,12 +7,9 @@ import { writeFile, mkdir } from "fs/promises";
 import { dirname, join } from "path";
 import { join } from "path";
 import os from "os";
-/*
- * Save files from the merged decompressed buffer using manifest metadata.
- * @param manifest The manifest JSON
- * @param mergedPieces The Uint8Array containing the reconstructed game data
- * @param outputDir The root folder where files will be written
- */
+
+const HOST = 'https://jagex.akamaized.net/direct6/osrs-win/osrs-win.json';
+const BIN = "/home/vitalflea/binaries";
 
 // convert Uint8Array/Buffer to hex string (C++ equivalent of stringToHexString)
 function stringToHexString(input: Uint8Array | Buffer): string {
@@ -29,39 +26,31 @@ async function saveFiles(manifest: any, mergedPieces: Uint8Array, outputDir: str
     const fileName: string = file.name;
     const fileSize: number = file.size;
 
-    // skip discord files
     if (fileName.includes("discord")) {
       offset += fileSize;
       continue;
     }
 
-    // slice out the file’s bytes
     const fileBytes = mergedPieces.slice(offset, offset + fileSize);
     offset += fileSize;
 
-    // build output path
     const outPath = join(outputDir, fileName);
     await mkdir(dirname(outPath), { recursive: true });
 
-    // write to disk
     await writeFile(outPath, fileBytes);
 
     console.log(`Saved ${fileName} (${fileSize} bytes) → ${outPath}`);
   }
 }
-const HOST = 'https://jagex.akamaized.net/direct6/osrs-win/osrs-win.json';
 
-// C++-accurate digest decoding
 function decodeDigest(digestB64: string): string {
-  // Base64URL → Base64
-  let base64 = digestB64.replace(/-/g, "+").replace(/_/g, "/");
-  base64 = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
 
-  // Decode directly to bytes
-  const bytes = Buffer.from(base64, "base64");
+	let base64 = digestB64.replace(/-/g, "+").replace(/_/g, "/");
+	base64 = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
 
-  // Convert to hex
-  return bytes.toString("hex");
+	const bytes = Buffer.from(base64, "base64");
+	
+	return bytes.toString("hex");
 }
 
 // process all pieces
@@ -126,11 +115,8 @@ serve({
       if (!baseUrl) throw new Error("Base URL not found in catalog config");
       const mergedPieces = await processPieces(manifestDecoded, baseUrl);
 
-		const homeDir = os.homedir();
-		const outputDir = join(homeDir, "binaries");
-
-		console.log(outputDir); // e.g., /home/ubuntu/binaries
-      await saveFiles(manifestDecoded, mergedPieces, outputDir);
+		
+      await saveFiles(manifestDecoded, mergedPieces, BIN);
       // Return sizes only (raw Uint8Array too large for JSON)
       return new Response(
         JSON.stringify(
