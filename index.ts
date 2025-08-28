@@ -101,8 +101,14 @@ serve({
       const manifestDecoded = decodeJwt(manifestData);
 
       // Step 4: process pieces
-      const baseUrlFull: string = catalogDecoded?.config?.remote?.baseUrl || "";
-      const baseUrl = baseUrlFull.split("/direct6/osrs-win/")[0]; // strip suffix
+      let baseUrlFull: string = catalogDecoded?.config?.remote?.baseUrl || "";
+
+// ensure it has http
+if (!baseUrlFull.startsWith("http://") && !baseUrlFull.startsWith("https://")) {
+  baseUrlFull = "https://" + baseUrlFull;
+}
+
+console.log("Base URL:", baseUrlFull);const baseUrl = baseUrlFull.split("/direct6/osrs-win/")[0]; // strip suffix
       if (!baseUrl) throw new Error("Base URL not found in catalog config");
       const mergedPieces = await processPieces(manifestDecoded, baseUrl);
 
