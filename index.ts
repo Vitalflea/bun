@@ -7,7 +7,7 @@ import { writeFile, mkdir } from "fs/promises";
 import { dirname, join } from "path";
 import { join } from "path";
 import os from "os";
-
+/*
  * Save files from the merged decompressed buffer using manifest metadata.
  * @param manifest The manifest JSON
  * @param mergedPieces The Uint8Array containing the reconstructed game data
