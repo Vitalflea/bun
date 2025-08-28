@@ -50,23 +50,32 @@ async function saveFiles(manifest: any, mergedPieces: Uint8Array, outputDir: str
 }
 const HOST = 'https://jagex.akamaized.net/direct6/osrs-win/osrs-win.json';
 
-async function processPieces(metafile: any, baseUrl: string) {
+// C++-accurate digest decoding
+function decodeDigest(digestB64: string): string {
+  // Base64URL → Base64
+  let base64 = digestB64.replace(/-/g, "+").replace(/_/g, "/");
+  // pad to multiple of 4
+  base64 = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
+  // decode to binary string
+  const decodedStr = base64Decode(base64);
+  // convert binary string to Uint8Array
+  const bytes = Uint8Array.from(decodedStr, c => c.charCodeAt(0));
+  // convert to hex string
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+// process all pieces
+async function processPieces(metafile: any, baseUrl: string): Promise<Uint8Array> {
   const digests: string[] = metafile?.pieces?.digests;
   if (!digests) throw new Error("No digests found in manifest");
 
   const decompressedChunks: Uint8Array[] = [];
 
   for (const digestB64 of digests) {
-    // base64 decode with padding
-    const padded = digestB64.padEnd(Math.ceil(digestB64.length / 4) * 4, "=");
-    const digestBytes = Buffer.from(base64Decode(padded), "binary");
-    const hexDigest = stringToHexString(digestBytes);
+    const hexDigest = decodeDigest(digestB64);
+    const pieceUrl = `${baseUrl}/direct6/osrs-win/pieces/${hexDigest.substring(0, 2)}/${hexDigest}.solidpiece`;
 
-    // build piece path
-    const piecePath = `/direct6/osrs-win/pieces/${hexDigest.substring(0, 2)}/${hexDigest}.solidpiece`;
-
-    // fetch piece
-    const resp = await fetch(baseUrl + piecePath);
+    const resp = await fetch(pieceUrl, { insecure: true });
     if (!resp.ok) throw new Error(`Failed to fetch piece: ${resp.status}`);
     const data = new Uint8Array(await resp.arrayBuffer());
 
@@ -75,7 +84,7 @@ async function processPieces(metafile: any, baseUrl: string) {
     decompressedChunks.push(decompressed);
   }
 
-  // merge into single Uint8Array
+  // merge all chunks into one Uint8Array
   const totalLength = decompressedChunks.reduce((n, arr) => n + arr.length, 0);
   const merged = new Uint8Array(totalLength);
   let offset = 0;
@@ -83,8 +92,10 @@ async function processPieces(metafile: any, baseUrl: string) {
     merged.set(arr, offset);
     offset += arr.length;
   }
+
   return merged;
 }
+
 
 serve({
   port: 3000,
@@ -111,9 +122,9 @@ serve({
       let baseUrlFull: string = catalogDecoded?.config?.remote?.baseUrl || "";
 
 // force HTTPS
-if (baseUrlFull.startsWith("http://")) {
-  baseUrlFull = baseUrlFull.replace("http://", "https://");
-}
+//if (baseUrlFull.startsWith("http://")) {
+  //baseUrlFull = baseUrlFull.replace("http://", "https://");
+//}
 
 console.log("Base URL:", baseUrlFull);
       const baseUrl = baseUrlFull.split("/direct6/osrs-win/")[0]; // strip suffix
