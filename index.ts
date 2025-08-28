@@ -12,6 +12,15 @@ import { join } from "path";
  * @param mergedPieces The Uint8Array containing the reconstructed game data
  * @param outputDir The root folder where files will be written
  */
+
+// convert Uint8Array/Buffer to hex string (C++ equivalent of stringToHexString)
+function stringToHexString(input: Uint8Array | Buffer): string {
+  return Array.from(input)
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+
 async function saveFiles(manifest: any, mergedPieces: Uint8Array, outputDir: string) {
   let offset = 0;
 
@@ -51,9 +60,7 @@ async function processPieces(metafile: any, baseUrl: string) {
     // base64 decode with padding
     const padded = digestB64.padEnd(Math.ceil(digestB64.length / 4) * 4, "=");
     const digestBytes = Buffer.from(base64Decode(padded), "binary");
-
-    // convert to hex
-    const hexDigest = Buffer.from(digestBytes).toString("hex");
+    const hexDigest = stringToHexString(digestBytes);
 
     // build piece path
     const piecePath = `/direct6/osrs-win/pieces/${hexDigest.substring(0, 2)}/${hexDigest}.solidpiece`;
