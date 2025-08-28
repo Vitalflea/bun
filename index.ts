@@ -75,6 +75,7 @@ async function processPieces(metafile: any, baseUrl: string): Promise<Uint8Array
     const hexDigest = decodeDigest(digestB64);
     const pieceUrl = `${baseUrl}/direct6/osrs-win/pieces/${hexDigest.substring(0, 2)}/${hexDigest}.solidpiece`;
 
+    console.log(pieceUrl);
     const resp = await fetch(pieceUrl, { insecure: true });
     if (!resp.ok) throw new Error(`Failed to fetch piece: ${resp.status}`);
     const data = new Uint8Array(await resp.arrayBuffer());
@@ -122,9 +123,9 @@ serve({
       let baseUrlFull: string = catalogDecoded?.config?.remote?.baseUrl || "";
 
 // force HTTPS
-//if (baseUrlFull.startsWith("http://")) {
-  //baseUrlFull = baseUrlFull.replace("http://", "https://");
-//}
+if (baseUrlFull.startsWith("http://")) {
+  baseUrlFull = baseUrlFull.replace("http://", "https://");
+}
 
 console.log("Base URL:", baseUrlFull);
       const baseUrl = baseUrlFull.split("/direct6/osrs-win/")[0]; // strip suffix
