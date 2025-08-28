@@ -4,6 +4,7 @@ import { decodeJwt } from "./JsonUtils.ts";
 import pako from "pako";
 import { writeFile, mkdir } from "fs/promises";
 import { dirname, join } from "path";
+import { archiveBinary } from "./archive";
 
 const HOST = "https://jagex.akamaized.net";
 const WINDOWS = `${HOST}/direct6/osrs-win`;
@@ -17,6 +18,32 @@ function stringToHexString(input: Uint8Array | Buffer): string {
     .join("");
 }
 
+async function saveBinary(manifest: any, binaryId: string, version: string, data: Uint8Array) {
+
+	let offset = 0;
+
+  for (const file of manifest.files) {
+
+    const fileName: string = file.name;
+    const fileSize: number = file.size;
+
+    if (fileName.includes("discord")) {
+      offset += fileSize;
+      continue;
+    }
+
+    const fileBytes = data.slice(offset, offset + fileSize);
+    offset += fileSize;
+  const outputDir = join(process.cwd(), "binaries");
+  await mkdir(outputDir, { recursive: true });
+
+  const path = join(outputDir, `${binaryId}-${version}.bin`);
+   await writeFile(path, fileBytes);
+
+  archiveBinary(binaryId, version, path);
+  console.log(`Archived ${binaryId} v${version} → ${path}`);
+}
+}
 
 async function saveFiles(manifest: any, mergedPieces: Uint8Array, outputDir: string) {
   let offset = 0;
@@ -118,6 +145,7 @@ serve({
       const bootstrap = decodeJwt(data);
 
       const id: string = bootstrap?.environments?.production?.id;
+	  const version: string = bootstrap?.environments?.production?.version;
       if (!id) { 
 		throw new Error("ID not found in decoded data");
 	  }
@@ -137,8 +165,9 @@ serve({
 
       const mergedPieces = await processPieces(manifestDecoded, remote);
 
-		
-      await saveFiles(manifestDecoded, mergedPieces, BIN);
+	 await saveBinary(manifestDecoded, version, id, mergedPieces);
+  	 console.log(`Saved binary ${version} version ${id}`);
+     // await saveFiles(manifestDecoded, mergedPieces, BIN);
      
       return new Response(
         JSON.stringify(
