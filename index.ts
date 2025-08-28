@@ -101,7 +101,7 @@ serve({
       const manifestDecoded = decodeJwt(manifestData);
 
       // Step 4: process 
-      const baseUrlFull: string = catalogDecoded?.config?.remote?.baseUrl || "";
+      let baseUrlFull: string = catalogDecoded?.config?.remote?.baseUrl || "";
 
 // force HTTPS
 if (baseUrlFull.startsWith("http://")) {
