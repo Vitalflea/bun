@@ -1,6 +1,12 @@
+import { mkdirSync } from "fs";
+import { join } from "path";
 import Database from "bun:sqlite";
 
-const db = new Database("users.db");
+const dbDir = join(process.cwd(), "..", "databases");
+mkdirSync(dbDir, { recursive: true }); // creates the folder if it doesn’t exist
+
+const dbPath = join(dbDir, "users.db");
+const db = new Database(dbPath);
 
 db.prepare(`
 CREATE TABLE IF NOT EXISTS users (
